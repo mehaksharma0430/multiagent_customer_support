@@ -1,9 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-/* =========================================
-   GLOBAL
-========================================= */
-
 /* =========================================
    GLOBAL
 ========================================= */
@@ -17,8 +11,8 @@ body,
 .stApp{
     background:linear-gradient(
         135deg,
-        #f8fafc,
-        #eef2ff
+        #f4f7fc,
+        #eef3ff
     );
 }
 
@@ -36,9 +30,9 @@ footer{
 
     max-width:1000px;
 
-    padding-top:2rem;
+    padding-top:0.5rem !important;
 
-    padding-bottom:5rem;
+    padding-bottom:2rem !important;
 }
 
 /* =========================================
@@ -47,9 +41,13 @@ footer{
 
 [data-testid="stSidebar"]{
 
-    background:rgba(255,255,255,.85);
+    display:block !important;
 
-    backdrop-filter:blur(20px);
+    min-width:280px !important;
+
+    max-width:280px !important;
+
+    background:white;
 
     border-right:1px solid #e2e8f0;
 }
@@ -58,12 +56,12 @@ footer{
 
     text-align:center;
 
-    padding:15px;
+    padding:12px;
 }
 
 .logo h1{
 
-    font-size:28px;
+    font-size:26px;
 
     font-weight:800;
 
@@ -83,136 +81,53 @@ footer{
 
     text-align:center;
 
-    margin-bottom:35px;
+    margin-top:0;
 
-    perspective:1000px;
+    margin-bottom:15px;
 }
 
 .main-header h1{
 
-    font-size:64px;
+    font-size:52px;
 
     font-weight:900;
-
-    letter-spacing:3px;
 
     text-transform:uppercase;
 
     color:#2563eb;
 
-    margin-bottom:10px;
+    letter-spacing:2px;
 
     text-shadow:
-        1px 1px 0 #1e40af,
-        2px 2px 0 #1d4ed8,
+        1px 1px 0 #1d4ed8,
+        2px 2px 0 #1e40af,
         3px 3px 0 #1e3a8a,
-        4px 4px 0 #172554,
-        8px 8px 20px rgba(0,0,0,.25);
+        6px 6px 15px rgba(0,0,0,.18);
 
-    animation:float3d 4s ease-in-out infinite;
-}
-
-.main-header h1:hover{
-
-    transform:scale(1.05);
-
-    transition:.4s;
-
-    text-shadow:
-        0 0 10px #2563eb,
-        0 0 20px #3b82f6,
-        0 0 40px #60a5fa;
-}
-
-.main-header p{
-
-    font-size:20px;
-
-    color:#475569;
-
-    font-weight:600;
-
-    animation:fadeIn 2s ease;
+    animation:float3d 3s ease-in-out infinite;
 }
 
 @keyframes float3d{
 
     0%{
-        transform:translateY(0px);
+        transform:translateY(0);
     }
 
     50%{
-        transform:translateY(-10px);
+        transform:translateY(-6px);
     }
 
     100%{
-        transform:translateY(0px);
-    }
-}
-
-@keyframes fadeIn{
-
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-
-    to{
-        opacity:1;
         transform:translateY(0);
     }
 }
 
 /* =========================================
-   WELCOME CARD
+   REMOVE WELCOME CARD
 ========================================= */
 
 .welcome-card{
-
-    background:rgba(255,255,255,.75);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,.5);
-
-    border-radius:24px;
-
-    padding:30px;
-
-    text-align:center;
-
-    margin-bottom:25px;
-
-    box-shadow:
-        0 10px 35px rgba(0,0,0,.08);
-
-    transition:.3s;
-}
-
-.welcome-card:hover{
-
-    transform:translateY(-5px);
-
-    box-shadow:
-        0 15px 40px rgba(37,99,235,.15);
-}
-
-.welcome-card h2{
-
-    font-size:30px;
-
-    color:#0f172a;
-
-    margin-bottom:15px;
-}
-
-.welcome-card p{
-
-    font-size:18px;
-
-    color:#64748b;
-
-    line-height:1.8;
+    display:none !important;
 }
 
 /* =========================================
@@ -221,17 +136,17 @@ footer{
 
 .stButton button{
 
-    border-radius:14px;
+    border-radius:12px;
 
     background:white;
 
-    border:1px solid #dbeafe;
-
     color:#0f172a;
+
+    border:1px solid #e2e8f0;
 
     font-weight:700;
 
-    transition:.3s;
+    transition:0.3s;
 }
 
 .stButton button:hover{
@@ -240,10 +155,7 @@ footer{
 
     color:white;
 
-    transform:translateY(-3px);
-
-    box-shadow:
-        0 8px 20px rgba(37,99,235,.25);
+    transform:translateY(-2px);
 }
 
 /* =========================================
@@ -252,10 +164,10 @@ footer{
 
 [data-testid="stChatMessage"]{
 
-    margin-bottom:15px;
+    margin-bottom:14px;
 }
 
-/* USER */
+/* USER MESSAGE */
 
 [data-testid="stChatMessage"]:has(
 div[data-testid="stChatMessageAvatarUser"]
@@ -271,17 +183,19 @@ div[data-testid="stChatMessageAvatarUser"]
 
     color:white;
 
-    border-radius:22px;
+    border-radius:20px;
 
-    padding:14px 18px;
+    padding:12px 16px;
 
-    max-width:70%;
+    max-width:75%;
+
+    margin-left:auto;
 
     box-shadow:
-        0 5px 15px rgba(37,99,235,.25);
+        0 4px 12px rgba(37,99,235,.25);
 }
 
-/* ASSISTANT */
+/* ASSISTANT MESSAGE */
 
 [data-testid="stChatMessage"]:has(
 div[data-testid="stChatMessageAvatarAssistant"]
@@ -290,18 +204,18 @@ div[data-testid="stChatMessageAvatarAssistant"]
 
     background:white;
 
-    border:1px solid #e2e8f0;
-
     color:#0f172a;
 
-    border-radius:22px;
+    border:1px solid #e2e8f0;
 
-    padding:14px 18px;
+    border-radius:20px;
+
+    padding:12px 16px;
 
     max-width:75%;
 
     box-shadow:
-        0 5px 15px rgba(0,0,0,.05);
+        0 4px 12px rgba(0,0,0,.05);
 }
 
 /* =========================================
@@ -310,27 +224,27 @@ div[data-testid="stChatMessageAvatarAssistant"]
 
 [data-testid="stChatMessageContent"] p{
 
+    margin:0 !important;
+
     font-size:16px !important;
 
     line-height:1.7 !important;
-
-    margin:0 !important;
 }
 
 /* =========================================
-   INPUT BOX
+   CHAT INPUT
 ========================================= */
 
 div[data-testid="stChatInput"]{
 
     background:white !important;
 
-    border-radius:22px !important;
-
     border:1px solid #dbeafe !important;
 
+    border-radius:18px !important;
+
     box-shadow:
-        0 8px 25px rgba(0,0,0,.06);
+        0 5px 15px rgba(0,0,0,.06);
 }
 
 div[data-testid="stChatInput"]:focus-within{
@@ -338,7 +252,7 @@ div[data-testid="stChatInput"]:focus-within{
     border-color:#2563eb !important;
 
     box-shadow:
-        0 0 0 4px rgba(37,99,235,.12);
+        0 0 0 3px rgba(37,99,235,.12);
 }
 
 div[data-testid="stChatInput"] textarea{
@@ -372,12 +286,14 @@ div[data-testid="stChatInput"] button:hover{
 
     background:white;
 
-    border-radius:16px;
-
     border:1px solid #e2e8f0;
 
+    border-radius:14px;
+
+    padding:10px;
+
     box-shadow:
-        0 5px 15px rgba(0,0,0,.04);
+        0 3px 8px rgba(0,0,0,.04);
 }
 
 /* =========================================
@@ -394,10 +310,4 @@ div[data-testid="stChatInput"] button:hover{
     background:#94a3b8;
 
     border-radius:20px;
-}
-.main-header p{
-    font-size:20px;
-    color:#475569;
-    font-weight:600;
-    animation:fadeIn 2s ease;
 }

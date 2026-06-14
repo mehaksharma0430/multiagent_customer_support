@@ -59,6 +59,13 @@ if "current_session" not in st.session_state:
 active_chat = st.session_state.sessions[
     st.session_state.current_session
 ]
+if len(active_chat["messages"]) == 0:
+    active_chat["messages"].append(
+        {
+            "role": "assistant",
+            "content": "👋 Hello! How can I help you today?"
+        }
+    )
 
 # ==========================================
 # SIDEBAR
@@ -68,7 +75,7 @@ with st.sidebar:
 
     st.markdown("""
     <div class="logo">
-        <h1>🤖 Intelli<span>Support</span></h1>
+        <h1> Intelli<span>Support</span></h1>
     </div>
     """, unsafe_allow_html=True)
 
@@ -137,13 +144,7 @@ st.markdown("""
 # WELCOME CARD
 # ==========================================
 
-if len(active_chat["messages"]) == 0:
 
-    st.markdown("""
-    <div class="welcome-card">
-        <h2>🚀 Welcome</h2>
-    </div>
-    """, unsafe_allow_html=True)
 # ==========================================
 # CHAT HISTORY
 # ==========================================
@@ -202,6 +203,7 @@ if prompt:
             "content": prompt
         }
     )
+    
 
     if active_chat["title"] == "New Chat":
         active_chat["title"] = prompt[:30]

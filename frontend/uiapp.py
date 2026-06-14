@@ -142,21 +142,19 @@ st.markdown("""
 
 if len(active_chat["messages"]) == 0:
 
-    st.markdown("""
+    st.markdown(
+    """
     <div class="welcome-card">
         <h2>🚀 Welcome</h2>
-
-        <p>
-        Ask about billing,
-        refunds,
-        orders,
-        shipping,
-        technical issues,
-        company policies,
-        and knowledge-base questions.
-        </p>
+        <div>
+            Ask about billing, refunds, orders, shipping,
+            technical issues, company policies,
+            and knowledge-base questions.
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
 # ==========================================
 # CHAT HISTORY

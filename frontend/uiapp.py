@@ -1,9 +1,29 @@
+
 import streamlit as st
 import requests
 import uuid
-
 import os
-import streamlit as st
+
+# ==========================================
+# PAGE CONFIG
+# ==========================================
+
+st.set_page_config(
+    page_title="IntelliSupport AI",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ==========================================
+# CONFIG
+# ==========================================
+
+API_URL = "https://multiagent-customer-support.onrender.com/chat"
+
+# ==========================================
+# LOAD CSS
+# ==========================================
 
 css_path = os.path.join(
     os.path.dirname(__file__),
@@ -17,42 +37,6 @@ if os.path.exists(css_path):
             f"<style>{f.read()}</style>",
             unsafe_allow_html=True
         )
-else:
-    st.warning(f"CSS not found: {css_path}")
-
-css_path = os.path.join(
-    os.path.dirname(__file__),
-    "assets",
-    "style.css"
-)
-
-
-
-with open(css_path, "r", encoding="utf-8") as f:
-    st.markdown(
-        f"<style>{f.read()}</style>",
-        unsafe_allow_html=True
-    )
-
-# ==========================================
-# CONFIG
-# ==========================================
-
-API_URL = "https://multiagent-customer-support.onrender.com/chat"
-st.set_page_config(
-    page_title="IntelliSupport AI",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# ==========================================
-# LOAD CSS
-# ==========================================
-
-
-
-
 
 # ==========================================
 # SESSION STATE
@@ -62,6 +46,7 @@ if "sessions" not in st.session_state:
     st.session_state.sessions = {}
 
 if "current_session" not in st.session_state:
+
     sid = str(uuid.uuid4())
 
     st.session_state.sessions[sid] = {
@@ -88,6 +73,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     if st.button("➕ New Chat"):
+
         sid = str(uuid.uuid4())
 
         st.session_state.sessions[sid] = {
@@ -96,11 +82,14 @@ with st.sidebar:
         }
 
         st.session_state.current_session = sid
+
         st.rerun()
 
     st.markdown("### 💬 Chat History")
 
-    for sid in reversed(list(st.session_state.sessions.keys())):
+    for sid in reversed(
+        list(st.session_state.sessions.keys())
+    ):
 
         title = st.session_state.sessions[sid]["title"]
 
@@ -118,7 +107,21 @@ with st.sidebar:
         len(active_chat["messages"])
     )
 
-    st.success("Backend Connected")
+    try:
+
+        response = requests.post(
+            API_URL,
+            json={"query": "hello"},
+            timeout=10
+        )
+
+        if response.status_code == 200:
+            st.success("🟢 Backend Online")
+        else:
+            st.error("🔴 Backend Offline")
+
+    except:
+        st.error("🔴 Backend Offline")
 
 # ==========================================
 # HEADER
@@ -142,9 +145,15 @@ if len(active_chat["messages"]) == 0:
     st.markdown("""
     <div class="welcome-card">
         <h2>🚀 Welcome</h2>
+
         <p>
-        Ask about billing, refunds, orders,
-        shipping and technical issues.
+        Ask about billing,
+        refunds,
+        orders,
+        shipping,
+        technical issues,
+        company policies,
+        and knowledge-base questions.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -155,8 +164,37 @@ if len(active_chat["messages"]) == 0:
 
 for msg in active_chat["messages"]:
 
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+    if msg["role"] == "user":
+
+        with st.chat_message(
+            "user",
+            avatar="👨‍💼"
+        ):
+            st.markdown(msg["content"])
+
+    else:
+
+        bot_path = os.path.join(
+            os.path.dirname(__file__),
+            "assets",
+            "bot.png"
+        )
+
+        if os.path.exists(bot_path):
+
+            with st.chat_message(
+                "assistant",
+                avatar=bot_path
+            ):
+                st.markdown(msg["content"])
+
+        else:
+
+            with st.chat_message(
+                "assistant",
+                avatar="🤖"
+            ):
+                st.markdown(msg["content"])
 
 # ==========================================
 # CHAT INPUT
@@ -165,6 +203,10 @@ for msg in active_chat["messages"]:
 prompt = st.chat_input(
     "Ask IntelliSupport..."
 )
+
+# ==========================================
+# SEND MESSAGE
+# ==========================================
 
 if prompt:
 
@@ -178,49 +220,35 @@ if prompt:
     if active_chat["title"] == "New Chat":
         active_chat["title"] = prompt[:30]
 
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    try:
 
-    with st.chat_message("assistant"):
+        response = requests.post(
+            API_URL,
+            json={
+                "query": prompt
+            },
+            timeout=60
+        )
 
-        typing_placeholder = st.empty()
+        if response.status_code == 200:
 
-        typing_placeholder.markdown("""
-        <div class="typing">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        """, unsafe_allow_html=True)
-
-        try:
-
-            response = requests.post(
-                API_URL,
-                json={"query": prompt},
-                timeout=60
+            answer = response.json().get(
+                "response",
+                "No response generated."
             )
 
-            if response.status_code == 200:
-                answer = response.json().get(
-                    "response",
-                    "No response generated."
-                )
-            else:
-                answer = (
-                    f"Server Error: "
-                    f"{response.status_code}"
-                )
-
-        except Exception as e:
+        else:
 
             answer = (
-                f"Connection Error: {str(e)}"
+                f"Server Error "
+                f"({response.status_code})"
             )
 
-        typing_placeholder.empty()
+    except Exception as e:
 
-        st.markdown(answer)
+        answer = (
+            f"Connection Error: {str(e)}"
+        )
 
     active_chat["messages"].append(
         {

@@ -38,7 +38,7 @@ with open(css_path, "r", encoding="utf-8") as f:
 # CONFIG
 # ==========================================
 
-API_URL = "http://127.0.0.1:8000/chat"
+API_URL = "multiagent-customer-support.onrender.com/chat"
 
 st.set_page_config(
     page_title="IntelliSupport AI",

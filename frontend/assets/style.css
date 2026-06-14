@@ -120,3 +120,19 @@ div[data-testid="stChatInput"]{
     background:#cbd5e1;
     border-radius:20px;
 }
+/* FORCE SIDEBAR VISIBLE */
+
+[data-testid="stSidebar"]{
+    transform: translateX(0%) !important;
+    margin-left: 0 !important;
+    visibility: visible !important;
+}
+
+[data-testid="collapsedControl"]{
+    display: none !important;
+}
+
+section[data-testid="stSidebar"]{
+    min-width: 280px !important;
+    max-width: 280px !important;
+}

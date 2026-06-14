@@ -1,0 +1,47 @@
+Technical Support Knowledge Base
+
+Login Issues:
+- Verify email and password.
+- Reset password using Forgot Password.
+- Clear browser cache.
+
+Website Not Loading:
+- Check internet connection.
+- Try another browser.
+- Disable browser extensions.
+
+Mobile App Crashes:
+- Update the application.
+- Restart the device.
+- Reinstall the application.
+
+API Errors:
+- Verify API key.
+- Check API documentation.
+- Ensure request limits are not exceeded.
+
+Support Priorities:
+
+Critical:
+- Production system down
+- Payment system failure
+
+High:
+- Major functionality unavailable
+
+Medium:
+- Performance issues
+- Minor bugs
+
+Low:
+- Feature requests
+- General inquiries
+
+Support Response Times:
+Critical: 1 Hour
+High: 4 Hours
+Medium: 24 Hours
+Low: 48 Hours
+
+Technical Support Contact:
+techsupport@nexatechsolutions.com

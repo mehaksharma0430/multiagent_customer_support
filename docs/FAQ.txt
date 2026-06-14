@@ -1,0 +1,16 @@
+Frequently Asked Questions
+
+Q: What services does Nexa Tech Solutions provide?
+A: Web development, app development, software development, UI/UX design, and cloud solutions.
+
+Q: How can I request a project quote?
+A: Contact our sales team with project requirements.
+
+Q: Do you provide post-launch support?
+A: Yes, maintenance and support packages are available.
+
+Q: Can I track project progress?
+A: Yes, project updates are shared regularly through client communication channels.
+
+Q: What technologies do you use?
+A: React, Angular, Node.js, Java, Python, PHP, Flutter, Android, iOS, and cloud platforms.

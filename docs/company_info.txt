@@ -1,0 +1,23 @@
+Company Name: Nexa Tech Solutions Private Limited
+
+About Us:
+Nexa Tech Solutions is an IT services and software development company founded in 2018. We help businesses build web applications, mobile applications, custom software solutions, and digital products.
+
+Services:
+- Web Development
+- Mobile App Development
+- UI/UX Design
+- Custom Software Development
+- E-Commerce Solutions
+- Cloud Solutions
+- Quality Assurance Testing
+
+Business Hours:
+Monday - Friday: 9:00 AM - 6:00 PM IST
+
+Support Contact:
+Email: support@nexatechsolutions.com
+Website: https://www.nexatechsolutions.com
+
+Mission:
+To deliver innovative, scalable, and secure technology solutions that help businesses grow digitally.

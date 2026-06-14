@@ -1,0 +1,21 @@
+Refund Policy
+
+1. Clients may request a refund within 14 days of project initiation if development work has not started.
+
+2. No refunds will be issued for:
+   - Completed projects
+   - Custom software development
+   - Delivered source code
+   - Third-party software licenses
+
+3. Partial refunds may be considered for cancelled projects based on work completed.
+
+4. Refund requests must include:
+   - Client Name
+   - Project ID
+   - Reason for Refund
+
+5. Approved refunds are processed within 7-10 business days.
+
+Contact:
+billing@nexatechsolutions.com

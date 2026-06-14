@@ -1,0 +1,23 @@
+Delivery Policy
+
+Nexa Tech Solutions primarily delivers digital services.
+
+Digital Deliverables:
+- Website Source Code
+- Mobile Applications
+- Software Documentation
+- Design Assets
+
+Delivery Methods:
+- Email
+- GitHub Repository
+- Cloud Storage Links
+
+Estimated Delivery:
+- Website Projects: 2-8 weeks
+- Mobile Apps: 4-12 weeks
+- UI/UX Projects: 1-3 weeks
+
+Clients receive delivery confirmation via email once project milestones are completed.
+
+No physical shipping is required for software services.

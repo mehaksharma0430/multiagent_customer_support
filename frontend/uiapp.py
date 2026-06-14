@@ -1,8 +1,24 @@
 import streamlit as st
 import requests
 import uuid
+
 import os
 import streamlit as st
+
+css_path = os.path.join(
+    os.path.dirname(__file__),
+    "assets",
+    "style.css"
+)
+
+if os.path.exists(css_path):
+    with open(css_path, "r", encoding="utf-8") as f:
+        st.markdown(
+            f"<style>{f.read()}</style>",
+            unsafe_allow_html=True
+        )
+else:
+    st.warning(f"CSS not found: {css_path}")
 
 css_path = os.path.join(
     os.path.dirname(__file__),
@@ -35,14 +51,9 @@ st.set_page_config(
 # LOAD CSS
 # ==========================================
 
-def load_css():
-    with open("assets/style.css", "r", encoding="utf-8") as f:
-        st.markdown(
-            f"<style>{f.read()}</style>",
-            unsafe_allow_html=True
-        )
 
-load_css()
+
+
 
 # ==========================================
 # SESSION STATE

@@ -192,3 +192,34 @@ div[data-testid="stChatInput"]{
 
     border-radius:12px;
 }
+/* Hide Streamlit sidebar toggle completely */
+
+[data-testid="collapsedControl"]{
+    display:none !important;
+}
+
+button[kind="header"]{
+    display:none !important;
+}
+
+header{
+    display:none !important;
+}
+
+/* Hide Material icon text */
+
+.material-symbols-rounded{
+    display:none !important;
+}
+
+.material-icons{
+    display:none !important;
+}
+
+span.material-symbols-rounded{
+    display:none !important;
+}
+
+span.material-icons{
+    display:none !important;
+}

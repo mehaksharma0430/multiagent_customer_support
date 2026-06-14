@@ -59,14 +59,6 @@ if "current_session" not in st.session_state:
 active_chat = st.session_state.sessions[
     st.session_state.current_session
 ]
-if len(active_chat["messages"]) == 0:
-    active_chat["messages"].append(
-        {
-            "role": "assistant",
-            "content": "👋 Hello! How can I help you today?"
-        }
-    )
-
 # ==========================================
 # SIDEBAR
 # ==========================================

@@ -395,3 +395,9 @@ div[data-testid="stChatInput"] button:hover{
 
     border-radius:20px;
 }
+.main-header p{
+    font-size:20px;
+    color:#475569;
+    font-weight:600;
+    animation:fadeIn 2s ease;
+}

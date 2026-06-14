@@ -2,8 +2,15 @@
    GLOBAL
 ========================================= */
 
-*{
-    font-family: "Times New Roman", serif !important;
+body,
+.stApp,
+p,
+div,
+span,
+button,
+input,
+textarea{
+    font-family:"Times New Roman", Times, serif !important;
 }
 
 html,

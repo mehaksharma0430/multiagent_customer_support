@@ -240,3 +240,8 @@ span.material-symbols-rounded{
 span.material-icons{
     display:none !important;
 }
+.material-symbols-rounded,
+.material-icons,
+[class*="material-symbol"]{
+    font-family: 'Material Symbols Rounded' !important;
+}

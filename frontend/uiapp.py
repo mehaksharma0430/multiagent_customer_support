@@ -1,4 +1,3 @@
-
 import streamlit as st
 import requests
 import uuid
@@ -59,6 +58,7 @@ if "current_session" not in st.session_state:
 active_chat = st.session_state.sessions[
     st.session_state.current_session
 ]
+
 # ==========================================
 # SIDEBAR
 # ==========================================
@@ -67,11 +67,11 @@ with st.sidebar:
 
     st.markdown("""
     <div class="logo">
-        <h1> Intelli<span>Support</span></h1>
+        <h1>IntelliSupport</h1>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("➕ New Chat"):
+    if st.button("➕  New chat", use_container_width=True):
 
         sid = str(uuid.uuid4())
 
@@ -84,27 +84,23 @@ with st.sidebar:
 
         st.rerun()
 
-    st.markdown("### 💬 Chat History")
+    st.markdown("<div class='sidebar-section'>Recent</div>", unsafe_allow_html=True)
 
-    for sid in reversed(
-        list(st.session_state.sessions.keys())
-    ):
+    for sid in reversed(list(st.session_state.sessions.keys())):
 
         title = st.session_state.sessions[sid]["title"]
+        is_active = sid == st.session_state.current_session
 
         if st.button(
             title,
-            key=f"session_{sid}"
+            key=f"session_{sid}",
+            use_container_width=True,
+            type="secondary"
         ):
             st.session_state.current_session = sid
             st.rerun()
 
-    st.markdown("---")
-
-    st.metric(
-        "Messages",
-        len(active_chat["messages"])
-    )
+    st.markdown("<div class='sidebar-spacer'></div>", unsafe_allow_html=True)
 
     try:
 
@@ -115,27 +111,33 @@ with st.sidebar:
         )
 
         if response.status_code == 200:
-            st.success("🟢 Backend Online")
+            st.markdown(
+                "<div class='status-pill status-online'>🟢 Online</div>",
+                unsafe_allow_html=True
+            )
         else:
-            st.error("🔴 Backend Offline")
+            st.markdown(
+                "<div class='status-pill status-offline'>🔴 Offline</div>",
+                unsafe_allow_html=True
+            )
 
-    except:
-        st.error("🔴 Backend Offline")
-
-# ==========================================
-# HEADER
-# ==========================================
-
-st.markdown("""
-<div class="main-header">
-    <h1>IntelliSupport AI</h1>
-</div>
-""", unsafe_allow_html=True)
+    except Exception:
+        st.markdown(
+            "<div class='status-pill status-offline'>🔴 Offline</div>",
+            unsafe_allow_html=True
+        )
 
 # ==========================================
-# WELCOME CARD
+# EMPTY STATE / HEADER
 # ==========================================
 
+if not active_chat["messages"]:
+    st.markdown("""
+    <div class="empty-state">
+        <h1>IntelliSupport AI</h1>
+        <p>How can I help you today?</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==========================================
 # CHAT HISTORY
@@ -145,10 +147,7 @@ for msg in active_chat["messages"]:
 
     if msg["role"] == "user":
 
-        with st.chat_message(
-            "user",
-            avatar="👨‍💼"
-        ):
+        with st.chat_message("user", avatar="🧑"):
             st.markdown(msg["content"])
 
     else:
@@ -160,28 +159,17 @@ for msg in active_chat["messages"]:
         )
 
         if os.path.exists(bot_path):
-
-            with st.chat_message(
-                "assistant",
-                avatar=bot_path
-            ):
+            with st.chat_message("assistant", avatar=bot_path):
                 st.markdown(msg["content"])
-
         else:
-
-            with st.chat_message(
-                "assistant",
-                avatar="🤖"
-            ):
+            with st.chat_message("assistant", avatar="🤖"):
                 st.markdown(msg["content"])
 
 # ==========================================
 # CHAT INPUT
 # ==========================================
 
-prompt = st.chat_input(
-    "Ask IntelliSupport..."
-)
+prompt = st.chat_input("Message IntelliSupport...")
 
 # ==========================================
 # SEND MESSAGE
@@ -190,12 +178,8 @@ prompt = st.chat_input(
 if prompt:
 
     active_chat["messages"].append(
-        {
-            "role": "user",
-            "content": prompt
-        }
+        {"role": "user", "content": prompt}
     )
-    
 
     if active_chat["title"] == "New Chat":
         active_chat["title"] = prompt[:30]
@@ -204,37 +188,22 @@ if prompt:
 
         response = requests.post(
             API_URL,
-            json={
-                "query": prompt
-            },
+            json={"query": prompt},
             timeout=60
         )
 
         if response.status_code == 200:
-
             answer = response.json().get(
-                "response",
-                "No response generated."
+                "response", "No response generated."
             )
-
         else:
-
-            answer = (
-                f"Server Error "
-                f"({response.status_code})"
-            )
+            answer = f"Server Error ({response.status_code})"
 
     except Exception as e:
-
-        answer = (
-            f"Connection Error: {str(e)}"
-        )
+        answer = f"Connection Error: {str(e)}"
 
     active_chat["messages"].append(
-        {
-            "role": "assistant",
-            "content": answer
-        }
+        {"role": "assistant", "content": answer}
     )
 
     st.rerun()

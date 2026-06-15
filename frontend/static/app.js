@@ -1,12 +1,146 @@
 // ==========================================================================
-// SESSION STATE AND PERSISTENCE (LocalStorage)
+// FIREBASE AUTH CONFIGURATION & INITIALIZATION
+// ==========================================================================
+
+// Default config. Swap these values with your actual Firebase project settings!
+const firebaseConfig = {
+    apiKey: "AIzaSyDummyKey-ForTestingOnly",
+    authDomain: "intellisupport-swarm.firebaseapp.com",
+    projectId: "intellisupport-swarm",
+    storageBucket: "intellisupport-swarm.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:123456abc"
+};
+
+// Check if using placeholder key to enable Mock Simulator
+const isDemoMode = firebaseConfig.apiKey.includes("DummyKey");
+
+// Initialize Firebase App
+let auth;
+try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+} catch (e) {
+    console.error("Firebase Auth failed to initialize. Falling back to Demo Simulator.", e);
+}
+
+// Global Auth State
+let currentUser = null;
+let confirmationResult = null; // For phone OTP verification
+
+// ==========================================================================
+// AUTH STATE MANAGEMENT (Google & Phone Sign-in)
+// ==========================================================================
+
+// Global hook to toggle tabs on Login screen
+window.switchLoginTab = function(type) {
+    const tabGoogle = document.getElementById("tab-google");
+    const tabPhone = document.getElementById("tab-phone");
+    const panelGoogle = document.getElementById("panel-google");
+    const panelPhone = document.getElementById("panel-phone");
+    const errBox = document.getElementById("auth-error");
+    
+    // Reset errors
+    errBox.style.display = "none";
+    
+    if (type === "google") {
+        tabGoogle.classList.add("active");
+        tabPhone.classList.remove("active");
+        panelGoogle.classList.add("active");
+        panelPhone.classList.remove("active");
+    } else {
+        tabPhone.classList.add("active");
+        tabGoogle.classList.remove("active");
+        panelPhone.classList.add("active");
+        panelGoogle.classList.remove("active");
+        
+        // Initialize ReCAPTCHA if needed
+        initRecaptcha();
+    }
+};
+
+// Initialize Recaptcha for Phone verification
+let recaptchaVerifier = null;
+function initRecaptcha() {
+    if (recaptchaVerifier || isDemoMode) return;
+    try {
+        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            'size': 'normal',
+            'callback': (response) => {
+                // reCAPTCHA solved
+            }
+        });
+        recaptchaVerifier.render();
+    } catch (e) {
+        console.error("Recaptcha initialization failed", e);
+        showAuthError("Recaptcha verification loading failed.");
+    }
+}
+
+// Show validation errors on login card
+function showAuthError(message) {
+    const errBox = document.getElementById("auth-error");
+    errBox.textContent = message;
+    errBox.style.display = "block";
+}
+
+// Handle login state changes
+function handleAuthStateChange(user) {
+    const loginOverlay = document.getElementById("login-overlay");
+    const profileCard = document.getElementById("user-profile-card");
+    const userNameEl = document.getElementById("user-display-name");
+    const userIdentifierEl = document.getElementById("user-identifier");
+    const userAvatarEl = document.getElementById("user-avatar");
+    
+    if (user) {
+        currentUser = user;
+        loginOverlay.style.display = "none";
+        profileCard.style.display = "flex";
+        
+        // Populate profile card
+        const displayName = user.displayName || user.phoneNumber || "AI Support User";
+        const identifier = user.email || user.phoneNumber || "Authenticated User";
+        userNameEl.textContent = displayName;
+        userIdentifierEl.textContent = identifier;
+        
+        // Set avatar (default or Google photo)
+        if (user.photoURL) {
+            userAvatarEl.src = user.photoURL;
+        } else {
+            // Generate letter-avatar using initials
+            const initial = displayName.charAt(0).toUpperCase();
+            userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4F46E5&color=fff&size=64`;
+        }
+        
+        // Initialize sessions scoped to this user
+        initSessions();
+    } else {
+        currentUser = null;
+        loginOverlay.style.display = "flex";
+        profileCard.style.display = "none";
+        
+        // Reset state
+        sessions = {};
+        currentSessionId = "";
+        
+        // Switch back to google tab
+        switchLoginTab("google");
+    }
+}
+
+// ==========================================================================
+// SESSION STATE AND PERSISTENCE (Scoped to currentUser.uid)
 // ==========================================================================
 let sessions = {};
 let currentSessionId = "";
 
-// Initialize sessions from LocalStorage
+// Initialize sessions from LocalStorage scoped to User ID
 function initSessions() {
-    const stored = localStorage.getItem("intellisupport_sessions");
+    if (!currentUser) return;
+    
+    const storageKey = `intellisupport_sessions_${currentUser.uid}`;
+    const stored = localStorage.getItem(storageKey);
+    
     if (stored) {
         try {
             sessions = JSON.parse(stored);
@@ -14,14 +148,16 @@ function initSessions() {
             console.error("Failed to parse stored sessions, clearing", e);
             sessions = {};
         }
+    } else {
+        sessions = {};
     }
     
     const sessionKeys = Object.keys(sessions);
     if (sessionKeys.length === 0) {
         createNewSession();
     } else {
-        // Load the most recently active session
-        const storedActiveId = localStorage.getItem("intellisupport_active_session");
+        // Load the most recently active session for this user
+        const storedActiveId = localStorage.getItem(`intellisupport_active_session_${currentUser.uid}`);
         if (storedActiveId && sessions[storedActiveId]) {
             currentSessionId = storedActiveId;
         } else {
@@ -32,10 +168,13 @@ function initSessions() {
     }
 }
 
-// Save sessions state to LocalStorage
+// Save sessions state to LocalStorage scoped to User ID
 function saveSessions() {
-    localStorage.setItem("intellisupport_sessions", JSON.stringify(sessions));
-    localStorage.setItem("intellisupport_active_session", currentSessionId);
+    if (!currentUser) return;
+    
+    const storageKey = `intellisupport_sessions_${currentUser.uid}`;
+    localStorage.setItem(storageKey, JSON.stringify(sessions));
+    localStorage.setItem(`intellisupport_active_session_${currentUser.uid}`, currentSessionId);
 }
 
 // Create new chat session
@@ -139,7 +278,6 @@ function renderSidebar() {
         item.className = `history-item ${session.id === currentSessionId ? "active" : ""}`;
         item.setAttribute("onclick", `selectSession('${session.id}')`);
         
-        // Use chat balloon icon by default, check if session is active
         const iconName = "chat_bubble";
         
         item.innerHTML = `
@@ -163,6 +301,8 @@ function renderSidebar() {
 // Load active conversation messages
 function loadActiveChat() {
     const activeChat = sessions[currentSessionId];
+    if (!activeChat) return;
+    
     const threadContainer = document.getElementById("chat-thread");
     const welcomeContainer = document.getElementById("welcome-container");
     
@@ -183,7 +323,7 @@ function loadActiveChat() {
     } else {
         welcomeContainer.style.display = "none";
         
-        // Rebuild bubbles
+        // Remove old bubbles
         const bubbles = threadContainer.querySelectorAll(".message-bubble");
         bubbles.forEach(b => b.remove());
         
@@ -221,10 +361,8 @@ function appendMessageBubble(role, content, agentKey) {
         `;
     }
     
-    // Format message text: handle line breaks and bold tags easily
     let formattedContent = escapeHTML(content).replace(/\n/g, "<br>");
-    // Simple bold markdown conversion
-    formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    formattedContent = formattedContent.replace(/\*\*(.*?)\*\"/g, "<strong>$1</strong>");
     
     bubble.innerHTML = `
         <div class="message-avatar">
@@ -328,6 +466,7 @@ async function checkBackendStatus() {
 // Send Message Flow
 async function sendMessage(text) {
     if (!text || text.trim() === "") return;
+    if (!currentUser) return;
     
     const activeChat = sessions[currentSessionId];
     const userPrompt = text.trim();
@@ -416,36 +555,185 @@ function setInputDisabledState(disabled) {
     btn.disabled = disabled || input.value.trim() === "";
 }
 
-// Click suggestion card helper
 window.fillPrompt = function(promptText) {
     const input = document.getElementById("chat-input");
     input.value = promptText;
     adjustTextareaHeight(input);
     
-    // Enable send button
     const btn = document.getElementById("btn-send");
     btn.disabled = false;
     
     input.focus();
 };
 
-// Auto-grow textarea height
 function adjustTextareaHeight(el) {
     el.style.height = "auto";
     const newHeight = Math.min(el.scrollHeight, 180);
     el.style.height = newHeight + "px";
 }
 
-// Page Load initialization
+// ==========================================================================
+// DOM CONTENT LOADED - ENTRY POINT
+// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Initialize sessions from localstorage
-    initSessions();
     
-    // 2. Initial backend status check and start interval (every 8 seconds)
-    checkBackendStatus();
-    setInterval(checkBackendStatus, 8000);
+    // --- 1. FIREBASE AUTHENTICATION EVENT HANDLERS ---
     
-    // 3. Event Listeners
+    const btnGoogle = document.getElementById("btn-google-signin");
+    const phoneForm = document.getElementById("phone-login-form");
+    const otpForm = document.getElementById("otp-verify-form");
+    const btnChangePhone = document.getElementById("btn-change-phone");
+    const btnLogout = document.getElementById("btn-logout");
+    const errBox = document.getElementById("auth-error");
+    
+    // Google Login Trigger
+    btnGoogle.addEventListener("click", () => {
+        errBox.style.display = "none";
+        
+        if (isDemoMode) {
+            // Simulated login flow for instant demo testing
+            console.log("Running in Google Demo Mode...");
+            showAuthError("Demo Mode: Simulating Google authentication...");
+            
+            setTimeout(() => {
+                const demoUser = {
+                    uid: "demo_google_user_123",
+                    displayName: "Mehak Sharma",
+                    email: "mehak.sharma@gmail.com",
+                    photoURL: ""
+                };
+                handleAuthStateChange(demoUser);
+            }, 1000);
+            return;
+        }
+        
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then(result => {
+                handleAuthStateChange(result.user);
+            })
+            .catch(error => {
+                console.error("Google Sign-In Error", error);
+                showAuthError(`Google Sign-In Failed: ${error.message}`);
+            });
+    });
+    
+    // Phone OTP request
+    phoneForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        errBox.style.display = "none";
+        
+        let phoneNumber = document.getElementById("phone-number").value.trim();
+        // Simple sanitization: prepend +1 if no plus symbol exists
+        if (!phoneNumber.startsWith("+")) {
+            phoneNumber = "+1" + phoneNumber.replace(/[-\s()]/g, "");
+        }
+        
+        if (isDemoMode) {
+            console.log("Running in Phone Demo Mode for:", phoneNumber);
+            showAuthError("Demo Mode: SMS simulated. Enter code '123456' to log in.");
+            
+            setTimeout(() => {
+                phoneForm.style.display = "none";
+                otpForm.style.display = "flex";
+                document.getElementById("otp-code").focus();
+            }, 800);
+            return;
+        }
+        
+        const appVerifier = recaptchaVerifier;
+        auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then(result => {
+                confirmationResult = result;
+                phoneForm.style.display = "none";
+                otpForm.style.display = "flex";
+                document.getElementById("otp-code").focus();
+            })
+            .catch(error => {
+                console.error("Phone Auth Error", error);
+                showAuthError(`SMS request failed: ${error.message}`);
+                // Reset recaptcha
+                if (window.grecaptcha) {
+                    grecaptcha.reset();
+                }
+            });
+    });
+    
+    // OTP verification
+    otpForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        errBox.style.display = "none";
+        
+        const code = document.getElementById("otp-code").value.trim();
+        
+        if (isDemoMode) {
+            if (code === "123456") {
+                const demoUser = {
+                    uid: "demo_phone_user_456",
+                    displayName: "Customer Support User",
+                    email: "",
+                    phoneNumber: "+1 555-0199",
+                    photoURL: ""
+                };
+                handleAuthStateChange(demoUser);
+            } else {
+                showAuthError("Demo Error: Invalid code. Please enter '123456'.");
+            }
+            return;
+        }
+        
+        if (!confirmationResult) {
+            showAuthError("Session expired. Please try sending SMS again.");
+            return;
+        }
+        
+        confirmationResult.confirm(code)
+            .then(result => {
+                handleAuthStateChange(result.user);
+            })
+            .catch(error => {
+                console.error("OTP Verification Error", error);
+                showAuthError(`Invalid verification code: ${error.message}`);
+            });
+    });
+    
+    // Return back to Phone entry
+    btnChangePhone.addEventListener("click", () => {
+        otpForm.style.display = "none";
+        phoneForm.style.display = "flex";
+        errBox.style.display = "none";
+        document.getElementById("otp-code").value = "";
+    });
+    
+    // Logout Handler
+    btnLogout.addEventListener("click", () => {
+        if (isDemoMode) {
+            handleAuthStateChange(null);
+            return;
+        }
+        
+        auth.signOut()
+            .then(() => {
+                handleAuthStateChange(null);
+            })
+            .catch(error => {
+                console.error("Logout error", error);
+                alert("Sign Out failed: " + error.message);
+            });
+    });
+    
+    // Firebase auth status subscription
+    if (!isDemoMode && auth) {
+        auth.onAuthStateChanged(user => {
+            handleAuthStateChange(user);
+        });
+    } else {
+        // Initially logged out in Demo Mode
+        handleAuthStateChange(null);
+    }
+    
+    // --- 2. REGULAR CHAT FUNCTIONAL INTERACTION LISTENERS ---
+    
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("btn-send");
     const chatForm = document.getElementById("chat-form");
@@ -456,14 +744,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Auto grow textarea as user types
     chatInput.addEventListener("input", function() {
         adjustTextareaHeight(this);
-        sendBtn.disabled = this.value.trim() === "";
+        sendBtn.disabled = this.value.trim() === "" || !currentUser;
     });
     
     // Send message on Enter key press (without shift key)
     chatInput.addEventListener("keydown", function(e) {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            if (this.value.trim() !== "" && !this.disabled) {
+            if (this.value.trim() !== "" && !this.disabled && currentUser) {
                 chatForm.requestSubmit();
             }
         }
@@ -481,7 +769,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     // Action buttons
-    newChatBtn.addEventListener("click", createNewSession);
-    deleteChatBtn.addEventListener("click", () => deleteSession(currentSessionId));
-    renameChatBtn.addEventListener("click", () => renameSession(currentSessionId));
+    newChatBtn.addEventListener("click", () => {
+        if (currentUser) createNewSession();
+    });
+    deleteChatBtn.addEventListener("click", () => {
+        if (currentUser) deleteSession(currentSessionId);
+    });
+    renameChatBtn.addEventListener("click", () => {
+        if (currentUser) renameSession(currentSessionId);
+    });
+    
+    // Initial backend status check and start interval (every 8 seconds)
+    checkBackendStatus();
+    setInterval(checkBackendStatus, 8000);
 });

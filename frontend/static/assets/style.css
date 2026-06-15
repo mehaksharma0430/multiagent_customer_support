@@ -1,0 +1,236 @@
+/* =========================================
+   GLOBAL
+========================================= */
+
+html, body, .stApp {
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+    color: #1f2328;
+}
+
+p, h1, h2, h3, h4, h5, h6, div, button, input, textarea {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+}
+
+/* Keep Material Icons working */
+.material-symbols-rounded,
+.material-icons,
+[class*="material-symbol"] {
+    font-family: 'Material Symbols Rounded' !important;
+}
+
+/* Hide menu and footer */
+#MainMenu,
+footer {
+    visibility: hidden;
+}
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.main .block-container {
+    max-width: 760px;
+    padding-top: 2rem !important;
+    padding-bottom: 6rem !important;
+    margin: 0 auto;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+[data-testid="stSidebar"] {
+    background: #f7f7f8;
+    border-right: 1px solid #e5e5e5;
+}
+
+section[data-testid="stSidebar"] {
+    min-width: 270px !important;
+    max-width: 270px !important;
+}
+
+.logo {
+    text-align: center;
+    padding: 8px 0 16px 0;
+}
+
+.logo h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2328;
+    margin: 0;
+}
+
+.sidebar-section {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8e8ea0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 16px 4px 8px 4px;
+}
+
+.sidebar-spacer {
+    flex-grow: 1;
+}
+
+/* =========================================
+   STATUS PILL
+========================================= */
+
+.status-pill {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.status-online {
+    background: #e6f6ec;
+    color: #1a7f37;
+}
+
+.status-offline {
+    background: #fdeceb;
+    color: #cf222e;
+}
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.empty-state {
+    text-align: center;
+    margin-top: 18vh;
+}
+
+.empty-state h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #1f2328;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #8e8ea0;
+}
+
+/* =========================================
+   BUTTONS (SIDEBAR)
+========================================= */
+
+.stButton button {
+    width: 100%;
+    border-radius: 8px;
+    text-align: left;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #1f2328;
+    font-size: 14px;
+    padding: 8px 12px;
+    transition: background 0.15s ease;
+    box-shadow: none;
+}
+
+.stButton button:hover {
+    background: #ececf1;
+    border-color: transparent;
+    color: #1f2328;
+}
+
+/* "New chat" button - first button gets emphasis */
+section[data-testid="stSidebar"] .stButton:first-of-type button {
+    border: 1px solid #e5e5e5;
+    background: #ffffff;
+    font-weight: 500;
+}
+
+section[data-testid="stSidebar"] .stButton:first-of-type button:hover {
+    background: #f0f0f0;
+}
+
+/* =========================================
+   CHAT MESSAGES
+========================================= */
+
+[data-testid="stChatMessage"] {
+    margin-bottom: 18px;
+    background: transparent;
+}
+
+[data-testid="stChatMessageContent"] {
+    border-radius: 0;
+    padding: 0;
+}
+
+[data-testid="stChatMessageContent"] p {
+    font-size: 16px !important;
+    line-height: 1.65 !important;
+    margin: 0 !important;
+    color: #1f2328;
+}
+
+/* User message bubble */
+[data-testid="stChatMessage"]:has(
+    div[data-testid="stChatMessageAvatarUser"]
+) [data-testid="stChatMessageContent"] {
+    background: #f4f4f5 !important;
+    color: #1f2328 !important;
+    border-radius: 16px !important;
+    padding: 10px 14px !important;
+    max-width: 70% !important;
+    margin-left: auto !important;
+    border: none !important;
+    box-shadow: none;
+}
+
+/* Assistant message - no bubble, plain text like ChatGPT/Claude */
+[data-testid="stChatMessage"]:has(
+    div[data-testid="stChatMessageAvatarAssistant"]
+) [data-testid="stChatMessageContent"] {
+    background: transparent !important;
+    color: #1f2328 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin-right: auto !important;
+    box-shadow: none !important;
+}
+
+/* =========================================
+   CHAT INPUT
+========================================= */
+
+div[data-testid="stChatInput"] {
+    background: #ffffff !important;
+    border: 1px solid #d9d9e3 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+}
+
+div[data-testid="stChatInput"]:focus-within {
+    border-color: #b4b4c0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+div[data-testid="stChatInput"] textarea {
+    font-size: 16px !important;
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d1d6;
+    border-radius: 20px;
+}

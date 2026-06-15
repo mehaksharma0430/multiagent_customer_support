@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliSupport AI - Enterprise Agentic Support</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols Rounded for icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <!-- ANIMATED SVG LOGO -->
+                <div class="logo-container">
+                    <svg class="brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Outer Hexagon Orbit -->
+                        <polygon class="logo-hex-orbit" points="50,10 85,30 85,70 50,90 15,70 15,30" stroke="url(#hexGradient)" stroke-width="1.5" stroke-dasharray="10 15" />
+                        <!-- Core Shield Shape -->
+                        <path class="logo-shield" d="M50,22 C59,22 72,17 72,17 C72,17 74,48 64,68 C58,80 50,83 50,83 C50,83 42,80 36,68 C26,48 28,17 28,17 C28,17 41,22 50,22 Z" fill="url(#shieldBgGradient)" stroke="url(#shieldBorderGradient)" stroke-width="2" />
+                        <!-- Inner AI Core Grid & Circuits -->
+                        <circle class="logo-core" cx="50" cy="48" r="10" fill="url(#coreGradient)" />
+                        <line class="logo-circuit circ-1" x1="50" y1="38" x2="50" y2="28" stroke="#00F5FF" stroke-width="1.5" />
+                        <line class="logo-circuit circ-2" x1="40" y1="48" x2="30" y2="48" stroke="#00F5FF" stroke-width="1.5" />
+                        <line class="logo-circuit circ-3" x1="50" y1="58" x2="50" y2="68" stroke="#00F5FF" stroke-width="1.5" />
+                        <line class="logo-circuit circ-4" x1="60" y1="48" x2="70" y2="48" stroke="#00F5FF" stroke-width="1.5" />
+                        <!-- Pulsing nodes -->
+                        <circle class="logo-node node-top" cx="50" cy="28" r="2.5" fill="#FFFFFF" />
+                        <circle class="logo-node node-left" cx="30" cy="48" r="2.5" fill="#FFFFFF" />
+                        <circle class="logo-node node-bottom" cx="50" cy="68" r="2.5" fill="#FFFFFF" />
+                        <circle class="logo-node node-right" cx="70" cy="48" r="2.5" fill="#FFFFFF" />
+                        
+                        <!-- Definitions -->
+                        <defs>
+                            <linearGradient id="hexGradient" x1="0" y1="0" x2="100" y2="100">
+                                <stop offset="0%" stop-color="#4F46E5" />
+                                <stop offset="50%" stop-color="#06B6D4" />
+                                <stop offset="100%" stop-color="#3b82f6" />
+                            </linearGradient>
+                            <linearGradient id="shieldBgGradient" x1="50" y1="20" x2="50" y2="85">
+                                <stop offset="0%" stop-color="rgba(20, 26, 42, 0.9)" />
+                                <stop offset="100%" stop-color="rgba(11, 15, 25, 0.95)" />
+                            </linearGradient>
+                            <linearGradient id="shieldBorderGradient" x1="0" y1="0" x2="100" y2="100">
+                                <stop offset="0%" stop-color="#4F46E5" />
+                                <stop offset="100%" stop-color="#06B6D4" />
+                            </linearGradient>
+                            <linearGradient id="coreGradient" x1="40" y1="38" x2="60" y2="58">
+                                <stop offset="0%" stop-color="#06B6D4" />
+                                <stop offset="100%" stop-color="#4F46E5" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>Intelli<span>Support</span></h2>
+                    <span class="sub-badge">Multi-Agent v1.0</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-new-chat" id="btn-new-chat">
+                <span class="material-symbols-rounded">add</span>
+                <span>New Conversation</span>
+            </button>
+            
+            <div class="sidebar-section-title">History</div>
+            <div class="chat-history-list" id="chat-history-list">
+                <!-- List items loaded dynamically via JS -->
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="status-panel">
+                    <div class="status-indicator">
+                        <span class="status-ping" id="api-ping-glow"></span>
+                        <span class="status-text" id="api-status-text">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- MAIN PANEL -->
+        <main class="main-panel">
+            
+            <!-- PANEL HEADER -->
+            <header class="panel-header">
+                <div class="chat-info">
+                    <h3 id="active-chat-title">New Conversation</h3>
+                    <div class="chat-meta">
+                        <span id="message-count">0 messages</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="header-action-btn" id="btn-rename-chat" title="Rename conversation">
+                        <span class="material-symbols-rounded">edit</span>
+                    </button>
+                    <button class="header-action-btn btn-danger" id="btn-delete-chat" title="Delete conversation">
+                        <span class="material-symbols-rounded">delete</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- AGENT HUD -->
+            <div class="agent-hud">
+                <div class="hud-label">Multi-Agent Swarm Status:</div>
+                <div class="agent-nodes-container">
+                    <div class="agent-node" id="agent-router" data-agent="router">
+                        <span class="material-symbols-rounded">insights</span>
+                        <span>Router</span>
+                    </div>
+                    <div class="agent-node" id="agent-billing" data-agent="billing">
+                        <span class="material-symbols-rounded">account_balance_wallet</span>
+                        <span>Billing Agent</span>
+                    </div>
+                    <div class="agent-node" id="agent-technical" data-agent="technical">
+                        <span class="material-symbols-rounded">build</span>
+                        <span>Technical Agent</span>
+                    </div>
+                    <div class="agent-node" id="agent-order" data-agent="order">
+                        <span class="material-symbols-rounded">local_shipping</span>
+                        <span>Orders Agent</span>
+                    </div>
+                    <div class="agent-node" id="agent-faq" data-agent="faq">
+                        <span class="material-symbols-rounded">help_center</span>
+                        <span>FAQ Agent</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MESSAGE WRAPPER -->
+            <div class="chat-thread-container" id="chat-thread">
+                
+                <!-- EMPTY WELCOME STATE -->
+                <div class="welcome-container" id="welcome-container">
+                    <div class="welcome-logo-box">
+                        <span class="material-symbols-rounded logo-icon">smart_toy</span>
+                    </div>
+                    <h2>How can I help you today?</h2>
+                    <p class="welcome-desc">Ask about orders, billing, technical issues, or company policies. Our specialized AI support swarm will coordinate to answer you.</p>
+                    
+                    <div class="suggestion-grid">
+                        <div class="suggestion-card" onclick="fillPrompt('Where is my order #1042? When will it ship?')">
+                            <span class="material-symbols-rounded">local_shipping</span>
+                            <h4>Track Order</h4>
+                            <p>"Where is my order #1042? When will it ship?"</p>
+                        </div>
+                        <div class="suggestion-card" onclick="fillPrompt('I see a double charge on my invoice, can I get a refund?')">
+                            <span class="material-symbols-rounded">payments</span>
+                            <h4>Billing / Refunds</h4>
+                            <p>"I see a double charge on my invoice, can I get a refund?"</p>
+                        </div>
+                        <div class="suggestion-card" onclick="fillPrompt('The login page shows a 500 server error. How can I fix it?')">
+                            <span class="material-symbols-rounded">bug_report</span>
+                            <h4>Technical Issues</h4>
+                            <p>"The login page shows a 500 server error. How can I fix it?"</p>
+                        </div>
+                        <div class="suggestion-card" onclick="fillPrompt('What is the company return policy for damaged items?')">
+                            <span class="material-symbols-rounded">menu_book</span>
+                            <h4>Company FAQ</h4>
+                            <p>"What is the company return policy for damaged items?"</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Bubbles go here -->
+                
+            </div>
+            
+            <!-- TYPING INDICATOR -->
+            <div class="typing-indicator-container" id="typing-indicator" style="display: none;">
+                <div class="agent-badge-inline" id="typing-agent-badge">
+                    <span class="material-symbols-rounded">insights</span>
+                    <span>Router analyzing...</span>
+                </div>
+                <div class="typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            
+            <!-- INPUT AREA -->
+            <footer class="input-panel">
+                <form class="input-form" id="chat-form">
+                    <div class="input-wrapper">
+                        <textarea class="chat-input" id="chat-input" rows="1" placeholder="Type a message or ask a question..."></textarea>
+                        <button type="submit" class="btn-send" id="btn-send" disabled>
+                            <span class="material-symbols-rounded">arrow_upward</span>
+                        </button>
+                    </div>
+                    <div class="input-footer-text">
+                        IntelliSupport AI coordinates multiple specialized agents. Powered by Mistral AI.
+                    </div>
+                </form>
+            </footer>
+            
+        </main>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
